@@ -2,12 +2,16 @@ import requests
 import msal
 import json
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # ----------------------------
 # CONFIG
 # ----------------------------
-CLIENT_ID = "a0f74f43-7d52-498b-b5e7-d13173519a77"
-TENANT_ID = "0f56a52d-fbe0-408f-8102-d7e194df2fa7"
+TENANT_ID = os.getenv("TENANT_ID")
+CLIENT_ID = os.getenv("CLIENT_ID")
+# CLIENT_SECRET = os.getenv("CLIENT_SECRET")  # Not needed for public client
 AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
 REDIRECT_URI = "http://localhost:8000/redirect"
 # SCOPES = ["Chat.ReadWrite", "ChatMessage.Send", "User.Read"]
