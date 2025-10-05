@@ -265,6 +265,7 @@ if not ACCESS_TOKEN:
 # CONFIG
 # -----------------------------
 OUTPUT_FILE = os.path.join(BASE_DIR, "filtered_today.json")
+OUTPUT_FILE1 = os.path.join(BASE_DIR, "filtered_tomorrow.json")
 MESSAGE_PREVIEW_FILE = os.path.join(BASE_DIR, "message_preview.html")
 LOG_FILE = os.path.join(BASE_DIR, "daily_excel_processor.log")
 
@@ -417,6 +418,9 @@ def main():
 
         # SAVE JSON
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            json.dump(all_filtered_rows, f, ensure_ascii=False, indent=4)
+
+        with open(OUTPUT_FILE1, "w", encoding="utf-8") as f:
             json.dump(all_filtered_rows, f, ensure_ascii=False, indent=4)
 
         # -----------------------------

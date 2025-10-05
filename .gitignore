@@ -1,1 +1,7 @@
 .env
+access_token.txt
+daily_excel_processor.log
+filtered_today.json
+filtered_tomorrow.json
+message_preview.html
+__pycache__/
