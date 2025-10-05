@@ -369,7 +369,9 @@ def main():
             logging.info("No visible sheets ending with 'Batches' found.")
             return
 
-        today = datetime.today().date()
+        # today = datetime.today().date()
+        today = datetime.today().date() - timedelta(days=1)
+        print(today)
         all_filtered_rows = []
 
         # PROCESS EACH SHEET
