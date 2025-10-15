@@ -1,1 +1,39 @@
-[]
+[
+    {
+        "Track": "Dotnet - B1\n (22 Aug 25 Batches) Mumbai",
+        "Test": "Gladiator",
+        "Date": "2025-10-15",
+        "Time": "-",
+        "Stark Corp Resource": "Prasanth",
+        "Additional resource(If failures are high)": "Velan,Divakar,Hariharan,Johnson joy",
+        "QB Details": "",
+        "": ""
+    },
+    {
+        "Track": "Data AWS B1 (01 Sep 2025) \nKalinga",
+        "Test": "Weekly Assessment 04",
+        "Date": "2025-10-15",
+        "Time": "16:00",
+        "Stark Corp Resource": "Hariharan",
+        "Additional resource(If failures are high)": "Balamurale,Jai chandru,preethika",
+        "QB Details": ""
+    },
+    {
+        "Track": "Cloud GCP Java B1 (22 Sep 25) B'lore",
+        "Test": "Weekly Assessment 02",
+        "Date": "2025-10-15",
+        "Time": "16:00",
+        "Stark Corp Resource": "Vikram",
+        "Additional resource(If failures are high)": "Kiruthika,,Preethika,,Pradeep,Kabilan",
+        "QB Details": ""
+    },
+    {
+        "Track": "Dotnet - B2 (22 Sep 25)\n Mumbai",
+        "Test": "MS1 Mock 4",
+        "Date": "2025-10-15",
+        "Time": "TBD",
+        "Stark Corp Resource": "Dhayananth",
+        "Additional resource(If failures are high)": "Velan,Prasanth,Divakar,Johnson joy",
+        "QB Details": ""
+    }
+]

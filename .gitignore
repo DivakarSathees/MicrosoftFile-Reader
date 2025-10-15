@@ -5,3 +5,4 @@ filtered_today.json
 filtered_tomorrow.json
 message_preview.html
 __pycache__/
+python3 -m uvicorn daily_excel_api:app --reload --host 0.0.0.0 --port 8000

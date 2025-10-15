@@ -10,7 +10,7 @@ load_dotenv()
 # CONFIG
 # -----------------------------
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-CHAT_ID = "19:8b58d438bf7241828ee4009c477a13c6@thread.v2"
+CHAT_ID = ""
 JSON_FILE = "filtered_today.json"
 
 GRAPH_URL = f"https://graph.microsoft.com/beta/chats/{CHAT_ID}/messages"

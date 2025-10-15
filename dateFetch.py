@@ -1,4 +1,4 @@
-# #!/usr/bin/env python3
+#!/usr/bin/env python3
 # import requests
 # import json
 # from datetime import datetime, timedelta
@@ -272,8 +272,12 @@ LOG_FILE = os.path.join(BASE_DIR, "daily_excel_processor.log")
 WORKBOOK_ID = "01MTOP4SZMUAJ5IMFDEBB3QJTXXJ4HLDEC"
 DRIVE_ID = "b!qFZ6QUc4VEi3I3L4f0VhuBtcxM__oQVCufiwqYslGCloiNIthSJwSJvZ6FviPX5U"
 WORKBOOK_URL = f"https://graph.microsoft.com/v1.0/drives/{DRIVE_ID}/items/{WORKBOOK_ID}/workbook/worksheets"
+print(WORKBOOK_URL)
 
-CHAT_ID = "19:db4e52f07e324ac984588ef6d2346d93@thread.v2"
+CHAT_ID = "19:3e85c11c1ba54f409d6a2829e19c9fe3@thread.v2" # testing chat
+# CHAT_ID = "19:81c3db05f555433d902d87a2d23f7b58@thread.v2" # X-Corp Stark Team chat
+# CHAT_ID = "19:db4e52f07e324ac984588ef6d2346d93@thread.v2" # AI Project Generatoe chat
+
 GRAPH_CHAT_URL = f"https://graph.microsoft.com/beta/chats/{CHAT_ID}/messages"
 GRAPH_USER_URL = "https://graph.microsoft.com/v1.0/users"
 
@@ -309,7 +313,9 @@ def get_user_id_by_email_or_name(email_or_name):
         "dhayananth": "dhayananth.d@iamneo.ai",
         "pradeep": "pradeep.s@iamneo.ai",
         "sriram": "sriramkumar.ramesh@iamneo.ai",
-        "sri ram": "sriramkumar.ramesh@iamneo.ai"
+        "sri ram": "sriramkumar.ramesh@iamneo.ai",
+        "hariharan": "nrhariharan@iamneo.ai",
+        "jai chandru": "jaichandru.ss@iamneo.ai"
     }
     key = email_or_name.strip().lower()
     email = name_email_map.get(key, email_or_name)
@@ -369,8 +375,8 @@ def main():
             logging.info("No visible sheets ending with 'Batches' found.")
             return
 
-        # today = datetime.today().date()
-        today = datetime.today().date() - timedelta(days=1)
+        today = datetime.today().date()
+        # today = datetime.today().date() - timedelta(days=1)
         print(today)
         all_filtered_rows = []
 
@@ -460,6 +466,7 @@ def main():
         payload = {"body": {"contentType": "html", "content": html_content}}
         if all_mentions:
             payload["mentions"] = all_mentions
+        logging.info(payload)
 
         response = requests.post(GRAPH_CHAT_URL, headers=headers, json=payload)
         if response.status_code == 201:

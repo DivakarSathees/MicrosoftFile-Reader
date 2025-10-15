@@ -1,58 +1,107 @@
+import os
 import json
+import msal
 import requests
-import browser_cookie3
 
-def get_graph_explorer_token():
-    """
-    Extracts Microsoft Graph Explorer token from your logged-in browser session.
-    Works with Chrome/Edge (local use only).
-    """
-    try:
-        # Try Chrome cookies first
-        cj = browser_cookie3.chrome(domain_name=".microsoft.com")
-    except Exception:
-        # Fallback to Edge
-        cj = browser_cookie3.edge(domain_name=".microsoft.com")
+# === Configuration ===
+CLIENT_ID = ""
+TENANT_ID = ""
 
-    # Check cookie names for Graph Explorer auth tokens
-    tokens = {}
-    for cookie in cj:
-        if "graph" in cookie.domain and ("access_token" in cookie.name or "microsoft" in cookie.name):
-            tokens[cookie.name] = cookie.value
+# Delegated Graph API permissions
+SCOPES = [
+    "Chat.ReadWrite",
+    "ChatMessage.Send",
+    "User.Read"
+]
 
-    # You may not see token directly — Graph Explorer uses localStorage
-    # Try hitting Graph Explorer API to extract the current token
-    resp = requests.get(
-        "https://developer.microsoft.com/en-us/graph/graph-explorer/api/proxy",
-        cookies=cj
+TOKEN_FILE = "token_cache.json"
+AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
+
+# Replace with your group chat ID
+GROUP_CHAT_ID = ""
+
+# === Token Cache Functions ===
+def load_cache():
+    cache = msal.SerializableTokenCache()
+    if os.path.exists(TOKEN_FILE):
+        cache.deserialize(open(TOKEN_FILE, "r").read())
+    return cache
+
+def save_cache(cache):
+    if cache.has_state_changed:
+        with open(TOKEN_FILE, "w") as f:
+            f.write(cache.serialize())
+
+# === Acquire Access Token ===
+def get_access_token():
+    cache = load_cache()
+    app = msal.PublicClientApplication(
+        CLIENT_ID,
+        authority=AUTHORITY,
+        token_cache=cache
     )
 
-    if resp.status_code == 200 and "accessToken" in resp.text:
-        # Attempt to parse token if available
-        try:
-            token_data = resp.json()
-            token = token_data.get("accessToken")
-        except Exception:
-            # Fallback to raw search
-            start = resp.text.find("accessToken")
-            if start != -1:
-                token = resp.text[start:].split('"')[2]
-            else:
-                token = None
+    # Try silent token acquisition
+    accounts = app.get_accounts()
+    if accounts:
+        result = app.acquire_token_silent(SCOPES, account=accounts[0])
+        if result and "access_token" in result:
+            save_cache(cache)
+            print("✅ Token acquired silently.")
+            return result["access_token"]
+
+    # Device code flow (no server/port needed)
+    flow = app.initiate_device_flow(scopes=SCOPES)
+    if "user_code" not in flow:
+        raise ValueError("Failed to create device flow")
+
+    print(f"🔑 Go to {flow['verification_uri']} and enter code: {flow['user_code']}")
+    result = app.acquire_token_by_device_flow(flow)
+
+    if "access_token" in result:
+        save_cache(cache)
+        print("✅ Token acquired via device code login.")
+        return result["access_token"]
     else:
-        token = None
+        raise Exception(result.get("error_description"))
 
-    if not token:
-        print("❌ Could not find Graph Explorer token. Please ensure you're logged into Graph Explorer in your browser.")
-        return None
+# === Send Message to Group Chat ===
+def send_group_chat_message(access_token, message_text, mentions=None):
+    url = f"https://graph.microsoft.com/v1.0/chats/{GROUP_CHAT_ID}/messages"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
 
-    # Save token for use in your scripts
-    with open("access_token.txt", "w") as f:
-        f.write(token)
-    print("✅ Token extracted and saved to access_token.txt")
+    body = {"body": {"content": message_text}}
 
-    return token
+    if mentions:
+        body["mentions"] = mentions
 
+    resp = requests.post(url, headers=headers, json=body)
+    if resp.status_code == 201:
+        print("✅ Message sent successfully!")
+    else:
+        print("❌ Failed to send message:", resp.status_code, resp.text)
 
+# === Example Usage ===
 if __name__ == "__main__":
-    get_graph_explorer_token()
+    token = get_access_token()
+
+    # Example message with @mention
+    # Replace USER_ID with the actual Azure AD object ID of the user
+    mentions = [
+        {
+            "id": 0,
+            "mentionText": "Alice",
+            "mentioned": {
+                "user": {
+                    "id": "USER_ID_GUID",
+                    "displayName": "Alice"
+                }
+            }
+        }
+    ]
+    message_content = "Hello <at id='0'>Alice</at>! This is a test message from Python."
+
+    send_group_chat_message(token, message_content, mentions)
