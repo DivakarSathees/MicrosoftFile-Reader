@@ -214,3 +214,9 @@ async def lifecycle_handler(request: Request):
     logging.info(f"Lifecycle event: {data}")
     return {"status": "ok"}
 
+@app.post("/webhook/messages")
+async def messages_webhook(request: Request):
+    data = await request.json()
+    print("🔔 Received webhook:", data)
+    return {"status": "ok"}
+
