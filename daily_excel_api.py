@@ -207,3 +207,10 @@ def home(request: Request):
 def process(request: Request, access_token: str = Form(...)):
     result = process_excel_and_post(access_token)
     return templates.TemplateResponse("index.html", {"request": request, "result": result})
+
+@app.post("/webhook/lifecycle")
+async def lifecycle_handler(request: Request):
+    data = await request.json()
+    logging.info(f"Lifecycle event: {data}")
+    return {"status": "ok"}
+
